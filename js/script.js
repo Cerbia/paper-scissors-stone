@@ -1,5 +1,6 @@
 'use strict'
 
+var startButton = document.getElementById('start-button');
 var paperButton = document.getElementById('paper-button');
 var stoneButton = document.getElementById('stone-button');
 var scissorsButton = document.getElementById('scissors-button');
@@ -7,56 +8,59 @@ var output = document.getElementById('output');
 var result = document.getElementById('result');
 var playerScore = 0;
 var computerScore = 0;
+var rounds = 0;
 
-
+startButton.addEventListener('click', function(){
+    output.innerHTML = "";
+    result.innerHTML = "";
+    rounds = window.prompt("How mamy rounds would you like to play?");
+});
 paperButton.addEventListener('click', function() { playerMove('paper'); } , false);
 stoneButton.addEventListener('click', function() { playerMove('stone'); } , false);
 scissorsButton.addEventListener('click', function() { playerMove('scissors'); } , false);
 
 function playerMove(userMove) {
-    var computerMove = randomMove();
-    if (userMove==computerMove) {
-        displayResult('TIED',userMove,computerMove)
-        //display draw
-        //"YOU WON: you played PAPER, computer played ROCK".
+    if(rounds===0 && result.innerHTML!= "") {
+        result.innerHTML=result.innerHTML+"<br>Game over, please press the new game button!<br>";
     }
-    if (userMove=='paper') {
-        if (computerMove=='stone') {
-            //user wins
-            playerScore++;
-            displayResult('WON',userMove,computerMove)
+    if (rounds>0) {
+        var computerMove = randomMove();
+        if (userMove==computerMove) {
+            displayResult('TIED',userMove,computerMove)
+        }
+        if (userMove=='paper') {
+            if (computerMove=='stone') {
+                playerScore++;
+                displayResult('WON',userMove,computerMove)
+        }
+            if (computerMove=='scissors') {
+                computerScore++;
+                displayResult('LOST',userMove,computerMove)
+            }
+        }
+        if (userMove=='stone') {
+            if (computerMove=='paper') {
+                computerScore++;
+                displayResult('LOST',userMove,computerMove)
+            }
+            if (computerMove=='scissors') {
+                playerScore++;
+                displayResult('WON',userMove,computerMove)
+            }
+        }
+        if (userMove=='scissors') {
+            if (computerMove=='paper') {
+                computerScore++;
+                displayResult('LOST',userMove,computerMove)
+            }
+            if (computerMove=='stone') {
+                playerScore++;
+                displayResult('WON',userMove,computerMove)
+            }
+        }
+        rounds--;
+        displayStatistics();
     }
-        if (computerMove=='scissors') {
-            //computer wins
-            computerScore++;
-            displayResult('LOST',userMove,computerMove)
-        }
-    }
-    if (userMove=='stone') {
-        if (computerMove=='paper') {
-            //computer wins
-            computerScore++;
-            displayResult('LOST',userMove,computerMove)
-        }
-        if (computerMove=='scissors') {
-            //user wins
-            playerScore++;
-            displayResult('WON',userMove,computerMove)
-        }
-    }
-    if (userMove=='scissors') {
-        if (computerMove=='paper') {
-            //computer wins
-            computerScore++;
-            displayResult('LOST',userMove,computerMove)
-        }
-        if (computerMove=='stone') {
-            //user wins
-            playerScore++;
-            displayResult('WON',userMove,computerMove)
-        }
-    }
-    displayStatistics();
 }
 function randomMove(){
     var computerMove;
@@ -72,9 +76,16 @@ function randomMove(){
 }
 function displayResult(userResult,userMove,computerMove){
     output.innerHTML = "YOU " + userResult + ": you played " + userMove.toUpperCase() + ", computer played " +computerMove.toUpperCase();
-    console.log("YOU " + userResult + ": you played " + userMove.toUpperCase() + ", computer played " +computerMove.toUpperCase());
 }
 function displayStatistics(){
     result.innerHTML = "YOU " + playerScore + " - " + computerScore + " Computer";
-    console.log("YOU " + playerScore + " - " + computerScore + " Computer");
+    if(rounds==0){
+        if(playerScore>computerScore) {
+            result.innerHTML = result.innerHTML + "<br><br> YOU WON  THE ENTIRE GAME!!! <br><br>";
+        }else if (playerScore<computerScore) {
+            result.innerHTML = result.innerHTML + "<br><br> YOU LOST THE ENTIRE GAME!!! <br><br>";
+        }else {
+            result.innerHTML = result.innerHTML + "<br><br> YOU DREW THE ENTIRE GAME!!! <br><br>";
+        }
+    }
 }
