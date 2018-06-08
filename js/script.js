@@ -1,27 +1,29 @@
 'use strict'
 
 var startButton = document.getElementById('start-button');
-var paperButton = document.getElementById('paper-button');
-var stoneButton = document.getElementById('stone-button');
-var scissorsButton = document.getElementById('scissors-button');
+var actionButtons = document.getElementsByClassName('player-move');
+
 var output = document.getElementById('output');
 var result = document.getElementById('result');
 var playerScore = 0;
 var computerScore = 0;
 var rounds = 0;
 
+console.log(actionButtons);
+
 startButton.addEventListener('click', function(){
     output.innerHTML = "";
     result.innerHTML = "";
     rounds = window.prompt("How mamy rounds would you like to play?");
 });
-paperButton.addEventListener('click', function() { playerMove('paper'); } , false);
-stoneButton.addEventListener('click', function() { playerMove('stone'); } , false);
-scissorsButton.addEventListener('click', function() { playerMove('scissors'); } , false);
 
+for(var i=0;i<actionButtons.length; i++) {
+    actionButtons[i].addEventListener('click', function() { playerMove(this.getAttribute('data-move')); } , false);
+}
 function playerMove(userMove) {
     if(rounds===0 && result.innerHTML!= "") {
-        result.innerHTML=result.innerHTML+"<br>Game over, please press the new game button!<br>";
+        //if button is inactive
+        result.innerHTML=result.innerHTML + "<br>Game over, please press the new game button!<br>";
     }
     if (rounds>0) {
         var computerMove = randomMove();
