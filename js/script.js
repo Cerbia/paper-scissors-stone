@@ -2,6 +2,7 @@
 
 var startButton = document.getElementById('start-button');
 var actionButtons = document.getElementsByClassName('player-move');
+disableGameButtons();
 
 var output = document.getElementById('output');
 var result = document.getElementById('result');
@@ -15,16 +16,13 @@ startButton.addEventListener('click', function(){
     output.innerHTML = "";
     result.innerHTML = "";
     rounds = window.prompt("How mamy rounds would you like to play?");
+    enableGameButtons();
 });
 
 for(var i=0;i<actionButtons.length; i++) {
     actionButtons[i].addEventListener('click', function() { playerMove(this.getAttribute('data-move')); } , false);
 }
 function playerMove(userMove) {
-    if(rounds===0 && result.innerHTML!= "") {
-        //if button is inactive
-        result.innerHTML=result.innerHTML + "<br>Game over, please press the new game button!<br>";
-    }
     if (rounds>0) {
         var computerMove = randomMove();
         if (userMove==computerMove) {
@@ -89,5 +87,23 @@ function displayStatistics(){
         }else {
             result.innerHTML = result.innerHTML + "<br><br> YOU DREW THE ENTIRE GAME!!! <br><br>";
         }
+        result.innerHTML=result.innerHTML + "<br>Game over, please press the new game button!<br>";
+        disableGameButtons();
+        resetGame();
     }
+}
+
+function disableGameButtons() {
+    for(var i=0;i<actionButtons.length; i++) {
+            actionButtons[i].disabled = true;
+        }
+}
+function enableGameButtons() {
+    for(var i=0;i<actionButtons.length; i++) {
+            actionButtons[i].disabled = false;
+        }
+}
+function resetGame() {
+    playerScore = 0;
+    computerScore = 0;
 }
