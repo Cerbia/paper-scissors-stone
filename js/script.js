@@ -2,108 +2,127 @@
 
 var startButton = document.getElementById('start-button');
 var actionButtons = document.getElementsByClassName('player-move');
-disableGameButtons();
 
 var output = document.getElementById('output');
 var result = document.getElementById('result');
-var playerScore = 0;
-var computerScore = 0;
-var rounds = 0;
 
-console.log(actionButtons);
+var params = {
+    playerScore: 0,
+    computerScore: 0,
+    roundsToPlay: 0,
+    currentRound: 0,
+    gameOver: true
+};
+
+resetGame();
 
 startButton.addEventListener('click', function(){
-    output.innerHTML = "";
-    result.innerHTML = "";
-    rounds = window.prompt("How mamy rounds would you like to play?");
-    enableGameButtons();
-});
+    //problem podawania innych znaków niż liczby
+    params.roundsToPlay = window.prompt("How mamy rounds would you like to play?");
 
-for(var i=0;i<actionButtons.length; i++) {
+    params.currentRound = 1;
+    params.gameOver = false;
+    enableGameButtons();
+    disableStartButton();
+
+});
+for(var i = 0; i < actionButtons.length; i++) {
     actionButtons[i].addEventListener('click', function() { playerMove(this.getAttribute('data-move')); } , false);
 }
 function playerMove(userMove) {
-    if (rounds>0) {
+    if (params.roundsToPlay > 0) {
         var computerMove = randomMove();
-        if (userMove==computerMove) {
-            displayResult('TIED',userMove,computerMove)
+        if (userMove == computerMove) {
+            displayRoundsResult('TIED',userMove,computerMove)
         }
-        if (userMove=='paper') {
-            if (computerMove=='stone') {
-                playerScore++;
-                displayResult('WON',userMove,computerMove)
+        if (userMove == 'paper') {
+            if (computerMove == 'stone') {
+                params.playerScore++;
+                displayRoundsResult('WON',userMove,computerMove)
         }
-            if (computerMove=='scissors') {
-                computerScore++;
-                displayResult('LOST',userMove,computerMove)
+            if (computerMove == 'scissors') {
+                params.computerScore++;
+                displayRoundsResult('LOST',userMove,computerMove)
             }
         }
-        if (userMove=='stone') {
-            if (computerMove=='paper') {
-                computerScore++;
-                displayResult('LOST',userMove,computerMove)
+        if (userMove == 'stone') {
+            if (computerMove == 'paper') {
+                params.computerScore++;
+                displayRoundsResult('LOST',userMove,computerMove)
             }
-            if (computerMove=='scissors') {
-                playerScore++;
-                displayResult('WON',userMove,computerMove)
-            }
-        }
-        if (userMove=='scissors') {
-            if (computerMove=='paper') {
-                computerScore++;
-                displayResult('LOST',userMove,computerMove)
-            }
-            if (computerMove=='stone') {
-                playerScore++;
-                displayResult('WON',userMove,computerMove)
+            if (computerMove == 'scissors') {
+                params.playerScore++;
+                displayRoundsResult('WON',userMove,computerMove)
             }
         }
-        rounds--;
+        if (userMove == 'scissors') {
+            if (computerMove == 'paper') {
+                params.computerScore++;
+                displayRoundsResult('LOST',userMove,computerMove)
+            }
+            if (computerMove == 'stone') {
+                params.playerScore++;
+                displayRoundsResult('WON',userMove,computerMove)
+            }
+        }
+        params.roundsToPlay--;
+        if(params.roundsToPlay === 0){
+            params.gameOver = true;
+        }
+        params.currentRound++;
         displayStatistics();
     }
 }
 function randomMove(){
     var computerMove;
     switch(Math.floor(Math.random()*3)+1){
-        case 1: computerMove='paper';
+        case 1: computerMove = 'paper';
             break;
-        case 2: computerMove='stone';
+        case 2: computerMove = 'stone';
             break;
-        case 3: computerMove='scissors';
+        case 3: computerMove = 'scissors';
             break;
     }
     return computerMove;
 }
-function displayResult(userResult,userMove,computerMove){
-    output.innerHTML = "YOU " + userResult + ": you played " + userMove.toUpperCase() + ", computer played " +computerMove.toUpperCase();
+function displayRoundsResult(userResult,userMove,computerMove){
+    output.innerHTML = output.innerHTML + "Round " + params.currentRound + ". YOU " + userResult + ": you played " + userMove.toUpperCase() + ", computer played " +computerMove.toUpperCase() + "<br>";
 }
 function displayStatistics(){
-    result.innerHTML = "YOU " + playerScore + " - " + computerScore + " Computer";
-    if(rounds==0){
-        if(playerScore>computerScore) {
+    result.innerHTML = "YOU " + params.playerScore + " - " + params.computerScore + " Computer";
+    if(params.gameOver){
+        if(params.playerScore > params.computerScore) {
             result.innerHTML = result.innerHTML + "<br><br> YOU WON  THE ENTIRE GAME!!! <br><br>";
-        }else if (playerScore<computerScore) {
+        }else if (params.playerScore<params.computerScore) {
             result.innerHTML = result.innerHTML + "<br><br> YOU LOST THE ENTIRE GAME!!! <br><br>";
         }else {
             result.innerHTML = result.innerHTML + "<br><br> YOU DREW THE ENTIRE GAME!!! <br><br>";
         }
-        result.innerHTML=result.innerHTML + "<br>Game over, please press the new game button!<br>";
-        disableGameButtons();
+        result.innerHTML = result.innerHTML + "<br>Game over, please press the new game button!<br>";
         resetGame();
     }
 }
-
-function disableGameButtons() {
-    for(var i=0;i<actionButtons.length; i++) {
-            actionButtons[i].disabled = true;
-        }
-}
 function enableGameButtons() {
-    for(var i=0;i<actionButtons.length; i++) {
+    for(var i = 0; i < actionButtons.length; i++) {
             actionButtons[i].disabled = false;
         }
 }
 function resetGame() {
-    playerScore = 0;
-    computerScore = 0;
+    output.innerHTML = "";
+    result.innerHTML = "";
+    params.playerScore = 0;
+    params.computerScore = 0;
+    disableGameButtons();
+    enableStartButton();
+}
+function disableGameButtons() {
+    for(var i = 0; i < actionButtons.length; i++) {
+            actionButtons[i].disabled = true;
+        }
+}
+function disableStartButton() {
+    startButton.disabled = true;   
+}
+function enableStartButton() {
+    startButton.disabled = false;   
 }
