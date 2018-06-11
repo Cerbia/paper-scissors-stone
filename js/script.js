@@ -2,6 +2,8 @@
 
 var startButton = document.getElementById('start-button');
 var actionButtons = document.getElementsByClassName('player-move');
+var overlay = document.querySelector(".overlay");
+var closeButton = document.querySelector(".close-button");
 
 var output = document.getElementById('output');
 var result = document.getElementById('result');
@@ -14,12 +16,12 @@ var params = {
     gameOver: true
 };
 
-resetGame();
-
 startButton.addEventListener('click', function(){
+    output.innerHTML = "";
+    result.innerHTML = "";
     //problem podawania innych znaków niż liczby
+    //new game + cancel
     params.roundsToPlay = window.prompt("How mamy rounds would you like to play?");
-
     params.currentRound = 1;
     params.gameOver = false;
     enableGameButtons();
@@ -29,6 +31,19 @@ startButton.addEventListener('click', function(){
 for(var i = 0; i < actionButtons.length; i++) {
     actionButtons[i].addEventListener('click', function() { playerMove(this.getAttribute('data-move')); } , false);
 }
+closeButton.addEventListener('click', toggleModal);
+
+//?
+window.addEventListener("click", windowOnClick);
+
+function windowOnClick(event) {
+    if (event.target === overlay) {
+        toggleModal();
+    }
+}
+
+resetGame();
+
 function playerMove(userMove) {
     if (params.roundsToPlay > 0) {
         var computerMove = randomMove();
@@ -70,6 +85,7 @@ function playerMove(userMove) {
             params.gameOver = true;
         }
         params.currentRound++;
+        console.log('params.gameOver: ' + params.gameOver)
         displayStatistics();
     }
 }
@@ -89,8 +105,9 @@ function displayRoundsResult(userResult,userMove,computerMove){
     output.innerHTML = output.innerHTML + "Round " + params.currentRound + ". YOU " + userResult + ": you played " + userMove.toUpperCase() + ", computer played " +computerMove.toUpperCase() + "<br>";
 }
 function displayStatistics(){
-    result.innerHTML = "YOU " + params.playerScore + " - " + params.computerScore + " Computer";
-    if(params.gameOver){
+    result.innerHTML = "SCORE: YOU " + params.playerScore + " - " + params.computerScore + " Computer";
+    if(params.gameOver) {
+        toggleModal();
         if(params.playerScore > params.computerScore) {
             result.innerHTML = result.innerHTML + "<br><br> YOU WON  THE ENTIRE GAME!!! <br><br>";
         }else if (params.playerScore<params.computerScore) {
@@ -99,6 +116,7 @@ function displayStatistics(){
             result.innerHTML = result.innerHTML + "<br><br> YOU DREW THE ENTIRE GAME!!! <br><br>";
         }
         result.innerHTML = result.innerHTML + "<br>Game over, please press the new game button!<br>";
+        
         resetGame();
     }
 }
@@ -108,8 +126,6 @@ function enableGameButtons() {
         }
 }
 function resetGame() {
-    output.innerHTML = "";
-    result.innerHTML = "";
     params.playerScore = 0;
     params.computerScore = 0;
     disableGameButtons();
@@ -125,4 +141,7 @@ function disableStartButton() {
 }
 function enableStartButton() {
     startButton.disabled = false;   
+}
+function toggleModal() {
+    overlay.classList.toggle("show-modal");
 }
