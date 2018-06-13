@@ -13,21 +13,34 @@ var params = {
     computerScore: 0,
     roundsToPlay: 0,
     currentRound: 0,
-    gameOver: true
+    gameOver: true,
+    progress: [] //tablica z postępem gry 
+    // numer rundy, ruch gracza, ruch komputera, wynik rundy, wynik gry po tej rundzie (np. "0-1" jeśli to pierwsza runda i wygrał komputer).
 };
 
-startButton.addEventListener('click', function(){
-    output.innerHTML = "";
-    result.innerHTML = "";
-    //problem podawania innych znaków niż liczby
-    //new game + cancel
+startButton.addEventListener('click', function(){    
     params.roundsToPlay = window.prompt("How mamy rounds would you like to play?");
-    params.currentRound = 1;
-    params.gameOver = false;
-    enableGameButtons();
-    disableStartButton();
+    
+    if(params.roundsToPlay===null) {
+        var cancelWasClicked = true;
+    }
 
+    params.roundsToPlay = parseInt(params.roundsToPlay);
+
+    if(!isNaN(params.roundsToPlay) && params.roundsToPlay>0) {
+        params.currentRound = 1;
+        params.gameOver = false;
+        enableGameButtons();
+        disableStartButton();
+        output.innerHTML = "";
+    } else if(cancelWasClicked) {
+        output.innerHTML = "";
+    } else {
+        output.innerHTML = "Please, provide the correct number of rounds";
+    }
+    result.innerHTML = "";
 });
+
 for(var i = 0; i < actionButtons.length; i++) {
     actionButtons[i].addEventListener('click', function() { playerMove(this.getAttribute('data-move')); } , false);
 }
