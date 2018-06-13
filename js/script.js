@@ -29,9 +29,9 @@ startButton.addEventListener('click', function(){
 
     if(!isNaN(params.roundsToPlay) && params.roundsToPlay>0) {
         params.currentRound = 1;
+        //zastanowić się nad tym
         params.gameOver = false;
-        enableGameButtons();
-        disableStartButton();
+        toggleGameButtons();
         output.innerHTML = "";
     } else if(cancelWasClicked) {
         output.innerHTML = "";
@@ -54,8 +54,6 @@ function windowOnClick(event) {
         toggleModal();
     }
 }
-
-resetGame();
 
 function playerMove(userMove) {
     if (params.roundsToPlay > 0) {
@@ -133,28 +131,36 @@ function displayStatistics(){
         resetGame();
     }
 }
-function enableGameButtons() {
-    for(var i = 0; i < actionButtons.length; i++) {
-            actionButtons[i].disabled = false;
-        }
-}
+// pomyśleć nad zmianami stanów gry
 function resetGame() {
     params.playerScore = 0;
     params.computerScore = 0;
-    disableGameButtons();
-    enableStartButton();
+    toggleGameButtons();
 }
-function disableGameButtons() {
-    for(var i = 0; i < actionButtons.length; i++) {
+
+function toggleGameButtons() {
+    if (startButton.disabled) {
+        startButton.disabled = false;
+        for(var i = 0; i < actionButtons.length; i++) {
             actionButtons[i].disabled = true;
         }
+    } else {
+        startButton.disabled = true;
+        for(var i = 0; i < actionButtons.length; i++) {
+            actionButtons[i].disabled = false;
+        }
+    }
 }
-function disableStartButton() {
-    startButton.disabled = true;   
-}
-function enableStartButton() {
-    startButton.disabled = false;   
-}
+
 function toggleModal() {
     overlay.classList.toggle("show-modal");
 }
+function updateProgress() {
+    //zapisać rundy jako wynik funkcji
+    //https://javascript.info/closure
+}
+function generateProgressTable() {
+    //zapisać rundy jako wynik funkcji
+    //https://javascript.info/closure
+}
+
