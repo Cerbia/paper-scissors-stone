@@ -1,17 +1,24 @@
 'use strict';
 
-var startButton = document.getElementById('start-button');
+var modalButton = document.getElementById('modal-button');
+var startButton = document.getElementById('game-button');
 var actionButtons = document.getElementsByClassName('player-move');
-var overlay = document.querySelector(".overlay");
-var closeButton = document.querySelector(".close-button");
+var startModal = document.getElementById("start-modal");
+var startModalInfo = document.getElementById("start-modal-info");
+var scoreModal = document.getElementById("score-modal");
+var closeButtonScoreModal = document.getElementById("close-score-modal");
+var closeButtonStartModal = document.getElementById("close-start-modal");
 
 var output = document.getElementById('output');
 var result = document.getElementById('result');
 
+var nameInput = document.getElementById('input-name');
+var roundsInput = document.getElementById('input-rounds');
+
 var counter = void 0;
-var cancelWasClicked = void 0;
 
 var params = {
+    userName: '',
     finalPlayerScore: 0,
     finalComputerScore: 0,
     roundsToPlay: 0,
@@ -21,15 +28,14 @@ var params = {
 };
 
 startButton.addEventListener('click', function () {
-    params.roundsToPlay = window.prompt("How mamy rounds would you like to play?");
-
-    if (params.roundsToPlay === null) {
-        cancelWasClicked = true;
+    //TODO: not empty name, input errors
+    params.userName = nameInput.value;
+    if (!params.userName) {
+        params.userName = "Anonymous";
     }
-
-    params.roundsToPlay = parseInt(params.roundsToPlay);
-
-    if (!isNaN(params.roundsToPlay) && params.roundsToPlay > 0) {
+    params.roundsToPlay = roundsInput.value;
+    if (!isNaN(params.roundsToPlay) && params.roundsToPlay > 0 && !(params.roundsToPlay === "")) {
+        toggleStartModal();
         //zastanowić się nad tym
         params.gameOver = false;
         toggleGameButtons();
@@ -38,12 +44,15 @@ startButton.addEventListener('click', function () {
         cleanProgressTable();
         counter = roundGenerator();
         params.currentRound = counter();
-    } else if (cancelWasClicked) {
-        output.innerHTML = "";
     } else {
-        output.innerHTML = "Please, provide the correct number of rounds";
+        startModalInfo.innerHTML = "Please, provide the correct number of rounds";
     }
     result.innerHTML = "";
+    startModalInfo.innerHTML = "";
+});
+
+modalButton.addEventListener('click', function () {
+    toggleStartModal();
 });
 
 for (var i = 0; i < actionButtons.length; i++) {
@@ -51,14 +60,22 @@ for (var i = 0; i < actionButtons.length; i++) {
         playerMove(this.getAttribute('data-move'));
     }, false);
 }
-closeButton.addEventListener('click', toggleModal);
+
+closeButtonScoreModal.addEventListener('click', toggleScoreModal);
+
+closeButtonStartModal.addEventListener('click', toggleStartModal);
 
 //?
 window.addEventListener("click", windowOnClick);
 
 function windowOnClick(event) {
-    if (event.target === overlay) {
-        toggleModal();
+    if (event.target === startModal) {
+        //https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+        toggleStartModal();
+    }
+    if (event.target === scoreModal) {
+        //https://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+        toggleScoreModal();
     }
 }
 
@@ -68,20 +85,17 @@ function playerMove(userMove) {
         if (userMove == computerMove) {
             displayRoundsResult('TIED', userMove, computerMove);
             updateProgress(params.currentRound, userMove, computerMove, 0, 0, params.finalPlayerScore, params.finalComputerScore);
-            //console.log(params.progress)
         }
         if (userMove == 'paper') {
             if (computerMove == 'stone') {
                 params.finalPlayerScore++;
                 displayRoundsResult('WON', userMove, computerMove);
                 updateProgress(params.currentRound, userMove, computerMove, 1, 0, params.finalPlayerScore, params.finalComputerScore);
-                //console.log(params.progress)
             }
             if (computerMove == 'scissors') {
                 params.finalComputerScore++;
                 displayRoundsResult('LOST', userMove, computerMove);
                 updateProgress(params.currentRound, userMove, computerMove, 0, 1, params.finalPlayerScore, params.finalComputerScore);
-                //console.log(params.progress)
             }
         }
         if (userMove == 'stone') {
@@ -89,13 +103,11 @@ function playerMove(userMove) {
                 params.finalComputerScore++;
                 displayRoundsResult('LOST', userMove, computerMove);
                 updateProgress(params.currentRound, userMove, computerMove, 0, 1, params.finalPlayerScore, params.finalComputerScore);
-                //console.log(params.progress)
             }
             if (computerMove == 'scissors') {
                 params.finalPlayerScore++;
                 displayRoundsResult('WON', userMove, computerMove);
                 updateProgress(params.currentRound, userMove, computerMove, 1, 0, params.finalPlayerScore, params.finalComputerScore);
-                //console.log(params.progress)
             }
         }
         if (userMove == 'scissors') {
@@ -103,13 +115,11 @@ function playerMove(userMove) {
                 params.finalComputerScore++;
                 displayRoundsResult('LOST', userMove, computerMove);
                 updateProgress(params.currentRound, userMove, computerMove, 0, 1, params.finalPlayerScore, params.finalComputerScore);
-                //console.log(params.progress)
             }
             if (computerMove == 'stone') {
                 params.finalPlayerScore++;
                 displayRoundsResult('WON', userMove, computerMove);
                 updateProgress(params.currentRound, userMove, computerMove, 1, 0, params.finalPlayerScore, params.finalComputerScore);
-                //console.log(params.progress)
             }
         }
         params.roundsToPlay--;
@@ -117,7 +127,6 @@ function playerMove(userMove) {
             params.gameOver = true;
         }
         params.currentRound = counter();
-        //console.log('params.currentRound : ' + params.currentRound )
         displayStatistics();
     }
 }
@@ -137,18 +146,18 @@ function randomMove() {
     return computerMove;
 }
 function displayRoundsResult(userResult, userMove, computerMove) {
-    output.innerHTML = output.innerHTML + ' Round ' + params.currentRound + '. YOU ' + userResult + ': you played ' + userMove.toUpperCase() + ', computer played ' + computerMove.toUpperCase() + '<br>';
+    output.innerHTML = output.innerHTML + ' Round ' + params.currentRound + '. ' + params.userName + ' ' + userResult + ': you played ' + userMove.toUpperCase() + ', computer played ' + computerMove.toUpperCase() + '<br>';
 }
 function displayStatistics() {
-    result.innerHTML = "SCORE: YOU " + params.finalPlayerScore + " - " + params.finalComputerScore + " Computer";
+    result.innerHTML = 'SCORE: ' + params.userName + ' ' + params.finalPlayerScore + ' : ' + params.finalComputerScore + ' Computer';
     if (params.gameOver) {
-        toggleModal();
+        toggleScoreModal();
         if (params.finalPlayerScore > params.finalComputerScore) {
-            result.innerHTML = result.innerHTML + "<br><br> YOU WON  THE ENTIRE GAME!!! <br><br>";
+            result.innerHTML = result.innerHTML + ('<br><br> ' + params.userName + ' WON  THE ENTIRE GAME!!! <br><br>');
         } else if (params.finalPlayerScore < params.finalComputerScore) {
-            result.innerHTML = result.innerHTML + "<br><br> YOU LOST THE ENTIRE GAME!!! <br><br>";
+            result.innerHTML = result.innerHTML + ('<br><br> ' + params.userName + ' LOST THE ENTIRE GAME!!! <br><br>');
         } else {
-            result.innerHTML = result.innerHTML + "<br><br> YOU DREW THE ENTIRE GAME!!! <br><br>";
+            result.innerHTML = result.innerHTML + ('<br><br> ' + params.userName + ' DREW THE ENTIRE GAME!!! <br><br>');
         }
         result.innerHTML = result.innerHTML + "<br>Game over, please press the new game button! <br><br>";
         generateProgressTable();
@@ -163,21 +172,24 @@ function resetGame() {
 }
 
 function toggleGameButtons() {
-    if (startButton.disabled) {
-        startButton.disabled = false;
+    if (modalButton.disabled) {
+        modalButton.disabled = false;
         for (var _i = 0; _i < actionButtons.length; _i++) {
             actionButtons[_i].disabled = true;
         }
     } else {
-        startButton.disabled = true;
+        modalButton.disabled = true;
         for (var _i2 = 0; _i2 < actionButtons.length; _i2++) {
             actionButtons[_i2].disabled = false;
         }
     }
 }
 
-function toggleModal() {
-    overlay.classList.toggle("show-modal");
+function toggleStartModal() {
+    startModal.classList.toggle("show-modal");
+}
+function toggleScoreModal() {
+    scoreModal.classList.toggle("show-modal");
 }
 function updateProgress(round, playerMove, computerMove, roundPlayerScore, roundComputerScore, finalPlayerScore, finalComputerScore) {
     params.progress.push({
@@ -201,6 +213,9 @@ function roundGenerator() {
 
 function generateProgressTable() {
     //tablica wychodząca poza obszar
+    var userNameTableScore = document.getElementById("user-name");
+    userNameTableScore.innerHTML = params.userName;
+
     var tableBody = document.getElementById('table-content');
 
     for (var _i3 = 0; _i3 < params.progress.length; _i3++) {

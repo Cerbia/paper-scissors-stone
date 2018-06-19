@@ -7,7 +7,7 @@
 </head>
 <body>
     <div>
-        <button id="start-button" type="button">New game</button>
+        <button id="modal-button" type="button">New game</button>
     </div>
     <div class="player-buttons">
         <button class="player-move" data-move="paper" id="paper-button" type="button" disabled>Paper</button>
@@ -15,15 +15,32 @@
         <button class="player-move" data-move="stone" id="stone-button" type="button" disabled>Stone</button>
     </div>
     <div id="output"></div>
-    <div class="overlay">
+    <div class="overlay" id="start-modal">
         <div class="modal">
-            <span class="close-button">&times;</span>
+            <span class="close-button" id="close-start-modal">&times;</span>
+            <form>
+                <div>
+                    <label for="input-name">Choose a username: </label>
+                    <input type="text" name="name" id="input-name" placeholder="Ber">
+                </div>
+                <div>
+                    <label for="input-rounds">Choose number of rounds: </label>
+                    <input type="number" min="1" max="120" step="1" name="name" id="input-rounds" placeholder="f.ex 5">
+                </div>
+                <input id="game-button" type="button" value="Start">
+                <div id="start-modal-info"></div>
+            </form>
+        </div>
+    </div>
+    <div class="overlay" id="score-modal">
+        <div class="modal">
+            <span class="close-button" id="close-score-modal">&times;</span>
             <div id="result"></div>
             <table id="table">
                 <thead>
                     <tr>
                         <th>round</th>
-                        <th>player</th>
+                        <th id="user-name"></th>
                         <th>computer</th>
                         <th>round score</th>
                         <th>final score</th>
