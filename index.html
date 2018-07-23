@@ -3,20 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>paper-rock-scissors game</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-    <div>
-        <button id="modal-button" type="button">New game</button>
+    <div class="jumbotron">
+        <h1 class="display-4">Hello, world!</h1>
+        <p class="lead">This is a simple hero unit, a simple jumbotron-style component for calling extra attention to featured content or information.</p>
+        <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <p class="lead">
+            <button class="btn btn-outline-dark btn-lg" id="modal-button" type="button">New game</button>
+        </p>
     </div>
-    <div class="player-buttons">
-        <button class="player-move" data-move="paper" id="paper-button" type="button" disabled>Paper</button>
-        <button class="player-move" data-move="scissors" id="scissors-button" type="button" disabled>Scissors</button>
-        <button class="player-move" data-move="stone" id="stone-button" type="button" disabled>Stone</button>
+    <div class="container">
+        
+        <div class="player-buttons">
+            <button class="player-move btn btn-primary" data-move="paper" id="paper-button" type="button" disabled>Paper</button>
+            <button class="player-move btn btn-success" data-move="scissors" id="scissors-button" type="button" disabled>Scissors</button>
+            <button class="player-move btn btn-danger" data-move="stone" id="stone-button" type="button" disabled>Stone</button>
+        </div>
+        <div id="output"></div>
     </div>
-    <div id="output"></div>
     <div class="overlay" id="start-modal">
-        <div class="modal">
+        <div class="my-modal">
             <span class="close-button" id="close-start-modal">&times;</span>
             <form>
                 <div>
@@ -33,7 +43,7 @@
         </div>
     </div>
     <div class="overlay" id="score-modal">
-        <div class="modal">
+        <div class="my-modal">
             <span class="close-button" id="close-score-modal">&times;</span>
             <div id="result"></div>
             <table id="table">
