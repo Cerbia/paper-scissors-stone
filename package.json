@@ -4,7 +4,6 @@
   "description": "task 7.3 link to the page: https://cerbia.github.io/song-repo/",
   "main": "index.js",
   "scripts": {
-    
     "test": "npm-run-all test:*",
     "test:html": "globstar nu-html-checker *.html",
     "init-project": "npm install && npm-run-all init:*",
